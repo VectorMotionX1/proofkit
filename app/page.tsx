@@ -60,6 +60,17 @@ export default function ProofKitPage() {
     setNotice("Audit receipt copied");
   }
 
+  function downloadReceipt() {
+    const blob = new Blob([summary], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${(requestTitle || "proofkit-request").toLowerCase().replace(/[^a-z0-9]+/g, "-")}-receipt.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+    setNotice("Audit receipt downloaded");
+  }
+
   async function copyReviewLink() {
     const payload = encodeReviewPayload({ requestTitle, reviewer, evidence, decision: "Pending" });
     const link = `${window.location.origin}/?share=${encodeURIComponent(payload)}`;
@@ -102,7 +113,7 @@ export default function ProofKitPage() {
           <div><p className="eyebrow">Decision</p><h2>Close the loop</h2><p className="sideCopy">Every decision is timestamped in the receipt. No more “which version did you approve?”</p></div>
           <div className="proofkitDecisionButtons"><button className="button primary" type="button" onClick={() => { setDecision("Approved"); setNotice("Approval recorded"); }}>Approve</button><button className="button" type="button" onClick={() => { setDecision("Changes requested"); setNotice("Changes requested"); }}>Request changes</button></div>
           {!reviewMode && <button className="button proofkitShareButton" type="button" onClick={copyReviewLink}>Copy client review link</button>}
-          <div className="proofkitReceipt"><div className="proofkitReceiptHeader"><span>Audit receipt</span><span className="proofkitBadge">{decision}</span></div><pre>{summary}</pre><button className="button" type="button" onClick={copyReceipt}>Copy receipt</button></div>
+          <div className="proofkitReceipt"><div className="proofkitReceiptHeader"><span>Audit receipt</span><span className="proofkitBadge">{decision}</span></div><pre>{summary}</pre><div className="proofkitReceiptActions"><button className="button" type="button" onClick={copyReceipt}>Copy receipt</button><button className="button" type="button" onClick={downloadReceipt}>Download receipt</button></div></div>
           <p className="proofkitNotice" role="status">{notice}</p>
         </aside>
       </section>
