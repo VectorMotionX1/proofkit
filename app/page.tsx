@@ -61,10 +61,11 @@ export default function ProofKitPage() {
   }
 
   async function copyReviewLink() {
-    const payload = encodeReviewPayload({ requestTitle, reviewer, evidence, decision: "Pending" });
+    const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
+    const payload = encodeReviewPayload({ requestTitle, reviewer, evidence, decision: "Pending", expiresAt });
     const link = `${window.location.origin}/?share=${encodeURIComponent(payload)}`;
     await navigator.clipboard.writeText(link);
-    setNotice("Client review link copied");
+    setNotice("Client review link copied · expires in 7 days");
   }
 
   return (
