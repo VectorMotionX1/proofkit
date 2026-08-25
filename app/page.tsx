@@ -16,6 +16,7 @@ export default function ProofKitPage() {
   const [decision, setDecision] = useState<Decision>("Pending");
   const [notice, setNotice] = useState("Draft saved locally");
   const [reviewMode, setReviewMode] = useState(false);
+  const [reviewExpiry, setReviewExpiry] = useState<number | null>(null);
 
   useEffect(() => {
     const shared = new URLSearchParams(window.location.search).get("share");
@@ -29,6 +30,7 @@ export default function ProofKitPage() {
     setReviewer(payload.reviewer);
     setEvidence(payload.evidence);
     setDecision(payload.decision);
+    setReviewExpiry(payload.expiresAt ?? null);
     setReviewMode(true);
     setNotice("Client review mode · changes are local to this browser");
   }, []);
@@ -68,6 +70,8 @@ export default function ProofKitPage() {
     setNotice("Client review link copied · expires in 7 days");
   }
 
+  const expiryLabel = reviewExpiry ? new Date(reviewExpiry).toLocaleDateString() : null;
+
   return (
     <main className="proofkitShell">
       <header className="proofkitTopbar">
@@ -104,6 +108,7 @@ export default function ProofKitPage() {
           <div className="proofkitDecisionButtons"><button className="button primary" type="button" onClick={() => { setDecision("Approved"); setNotice("Approval recorded"); }}>Approve</button><button className="button" type="button" onClick={() => { setDecision("Changes requested"); setNotice("Changes requested"); }}>Request changes</button></div>
           {!reviewMode && <button className="button proofkitShareButton" type="button" onClick={copyReviewLink}>Copy client review link</button>}
           <div className="proofkitReceipt"><div className="proofkitReceiptHeader"><span>Audit receipt</span><span className="proofkitBadge">{decision}</span></div><pre>{summary}</pre><button className="button" type="button" onClick={copyReceipt}>Copy receipt</button></div>
+          {reviewMode && expiryLabel && <p className="proofkitLinkMeta">Review link expires {expiryLabel} · demo-only local link</p>}
           <p className="proofkitNotice" role="status">{notice}</p>
         </aside>
       </section>
