@@ -361,6 +361,7 @@ code {
 .proofkitEvidence { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: center; padding: 13px; border: 1px solid #dbe6e2; border-radius: 6px; background: #f9fcfb; }
 .evidenceIcon { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 5px; background: #d6eee6; color: #08735b; font-weight: 800; }
 .proofkitEvidence strong, .proofkitEvidence small { display: block; }
+.proofkitEvidence a { color: #0b6d55; text-decoration: underline; text-underline-offset: 3px; }
 .proofkitEvidence small { color: #72827e; margin-top: 4px; }
 .proofkitEvidence button { border: 0; background: transparent; color: #778681; font-size: 22px; cursor: pointer; }
 .proofkitAddEvidence { display: grid; grid-template-columns: 1fr auto; gap: 8px; }

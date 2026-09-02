@@ -8,6 +8,10 @@ const starterEvidence: Evidence[] = [
   { id: 2, label: "Staging URL", detail: "https://preview.example.com" },
 ];
 
+function isEvidenceUrl(label: string) {
+  return /^https?:\/\//i.test(label);
+}
+
 export default function ProofKitPage() {
   const [requestTitle, setRequestTitle] = useState("Spring campaign landing page");
   const [reviewer, setReviewer] = useState("client@example.com");
@@ -98,7 +102,7 @@ export default function ProofKitPage() {
 
           <div className="proofkitSectionHeader"><div><p className="eyebrow">Evidence pack</p><h3>What the reviewer is deciding on</h3></div><span>{evidence.length} items</span></div>
           <div className="proofkitEvidenceList">
-            {evidence.map((item) => <div className="proofkitEvidence" key={item.id}><span className="evidenceIcon">↗</span><div><strong>{item.label}</strong><small>{item.detail}</small></div><button type="button" title={`Remove ${item.label}`} onClick={() => setEvidence((items) => items.filter((entry) => entry.id !== item.id))}>×</button></div>)}
+            {evidence.map((item) => <div className="proofkitEvidence" key={item.id}><span className="evidenceIcon">↗</span><div>{isEvidenceUrl(item.label) ? <a href={item.label} target="_blank" rel="noreferrer"><strong>{item.label}</strong></a> : <strong>{item.label}</strong>}<small>{item.detail}</small></div><button type="button" title={`Remove ${item.label}`} onClick={() => setEvidence((items) => items.filter((entry) => entry.id !== item.id))}>×</button></div>)}
           </div>
           {!reviewMode && <form className="proofkitAddEvidence" onSubmit={addEvidence}><input aria-label="Evidence label" value={newEvidence} onChange={(event) => setNewEvidence(event.target.value)} placeholder="Add a link, screenshot, or note" /><button className="button" type="submit">Add evidence</button></form>}
         </div>
