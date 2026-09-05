@@ -66,6 +66,17 @@ export default function ProofKitPage() {
     setNotice("Audit receipt copied");
   }
 
+  function downloadReceipt() {
+    const blob = new Blob([summary], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${(requestTitle || "proofkit-request").toLowerCase().replace(/[^a-z0-9]+/g, "-")}-receipt.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+    setNotice("Audit receipt downloaded");
+  }
+
   async function copyReviewLink() {
     const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
     const payload = encodeReviewPayload({ requestTitle, reviewer, evidence, decision: "Pending", expiresAt });

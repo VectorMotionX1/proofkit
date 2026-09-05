@@ -370,6 +370,7 @@ code {
 .sideCopy { color: #55706a; line-height: 1.55; }
 .proofkitReceipt { display: grid; gap: 14px; padding: 16px; border: 1px dashed #a8c2b9; border-radius: 6px; background: #f9fdfb; }
 .proofkitReceipt pre { overflow: auto; margin: 0; color: #3b544e; font: 12px/1.6 "SFMono-Regular", Consolas, monospace; white-space: pre-wrap; }
+.proofkitReceiptActions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .proofkitReceipt .button { cursor: pointer; }
 .proofkitNotice { min-height: 20px; margin: 0; color: #0b6d55; font-size: 13px; font-weight: 700; }
 .proofkitLinkMeta { margin: 0; color: #55706a; font-size: 12px; line-height: 1.45; }
@@ -384,4 +385,5 @@ code {
   .proofkitShell { width: min(100% - 28px, 1180px); }
   .proofkitMainPanel, .proofkitSidePanel { padding: 18px; }
   .proofkitAddEvidence { grid-template-columns: 1fr; }
+  .proofkitReceiptActions { grid-template-columns: 1fr; }
 }
