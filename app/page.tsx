@@ -8,6 +8,10 @@ const starterEvidence: Evidence[] = [
   { id: 2, label: "Staging URL", detail: "https://preview.example.com" },
 ];
 
+function isEvidenceUrl(label: string) {
+  return /^https?:\/\//i.test(label);
+}
+
 export default function ProofKitPage() {
   const [requestTitle, setRequestTitle] = useState("Spring campaign landing page");
   const [reviewer, setReviewer] = useState("client@example.com");
@@ -16,6 +20,7 @@ export default function ProofKitPage() {
   const [decision, setDecision] = useState<Decision>("Pending");
   const [notice, setNotice] = useState("Draft saved locally");
   const [reviewMode, setReviewMode] = useState(false);
+  const [reviewExpiry, setReviewExpiry] = useState<number | null>(null);
 
   useEffect(() => {
     const shared = new URLSearchParams(window.location.search).get("share");
@@ -29,6 +34,7 @@ export default function ProofKitPage() {
     setReviewer(payload.reviewer);
     setEvidence(payload.evidence);
     setDecision(payload.decision);
+    setReviewExpiry(payload.expiresAt ?? null);
     setReviewMode(true);
     setNotice("Client review mode · changes are local to this browser");
   }, []);
@@ -61,11 +67,14 @@ export default function ProofKitPage() {
   }
 
   async function copyReviewLink() {
-    const payload = encodeReviewPayload({ requestTitle, reviewer, evidence, decision: "Pending" });
+    const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
+    const payload = encodeReviewPayload({ requestTitle, reviewer, evidence, decision: "Pending", expiresAt });
     const link = `${window.location.origin}/?share=${encodeURIComponent(payload)}`;
     await navigator.clipboard.writeText(link);
-    setNotice("Client review link copied");
+    setNotice("Client review link copied · expires in 7 days");
   }
+
+  const expiryLabel = reviewExpiry ? new Date(reviewExpiry).toLocaleDateString() : null;
 
   return (
     <main className="proofkitShell">
@@ -93,7 +102,7 @@ export default function ProofKitPage() {
 
           <div className="proofkitSectionHeader"><div><p className="eyebrow">Evidence pack</p><h3>What the reviewer is deciding on</h3></div><span>{evidence.length} items</span></div>
           <div className="proofkitEvidenceList">
-            {evidence.map((item) => <div className="proofkitEvidence" key={item.id}><span className="evidenceIcon">↗</span><div><strong>{item.label}</strong><small>{item.detail}</small></div><button type="button" title={`Remove ${item.label}`} onClick={() => setEvidence((items) => items.filter((entry) => entry.id !== item.id))}>×</button></div>)}
+            {evidence.map((item) => <div className="proofkitEvidence" key={item.id}><span className="evidenceIcon">↗</span><div>{isEvidenceUrl(item.label) ? <a href={item.label} target="_blank" rel="noreferrer"><strong>{item.label}</strong></a> : <strong>{item.label}</strong>}<small>{item.detail}</small></div><button type="button" title={`Remove ${item.label}`} onClick={() => setEvidence((items) => items.filter((entry) => entry.id !== item.id))}>×</button></div>)}
           </div>
           {!reviewMode && <form className="proofkitAddEvidence" onSubmit={addEvidence}><input aria-label="Evidence label" value={newEvidence} onChange={(event) => setNewEvidence(event.target.value)} placeholder="Add a link, screenshot, or note" /><button className="button" type="submit">Add evidence</button></form>}
         </div>
@@ -103,6 +112,7 @@ export default function ProofKitPage() {
           <div className="proofkitDecisionButtons"><button className="button primary" type="button" onClick={() => { setDecision("Approved"); setNotice("Approval recorded"); }}>Approve</button><button className="button" type="button" onClick={() => { setDecision("Changes requested"); setNotice("Changes requested"); }}>Request changes</button></div>
           {!reviewMode && <button className="button proofkitShareButton" type="button" onClick={copyReviewLink}>Copy client review link</button>}
           <div className="proofkitReceipt"><div className="proofkitReceiptHeader"><span>Audit receipt</span><span className="proofkitBadge">{decision}</span></div><pre>{summary}</pre><button className="button" type="button" onClick={copyReceipt}>Copy receipt</button></div>
+          {reviewMode && expiryLabel && <p className="proofkitLinkMeta">Review link expires {expiryLabel} · demo-only local link</p>}
           <p className="proofkitNotice" role="status">{notice}</p>
         </aside>
       </section>

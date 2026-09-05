@@ -7,6 +7,7 @@ export type ReviewPayload = {
   reviewer: string;
   evidence: Evidence[];
   decision: Decision;
+  expiresAt?: number;
 };
 
 export function encodeReviewPayload(payload: ReviewPayload) {
@@ -17,6 +18,7 @@ export function decodeReviewPayload(value: string): ReviewPayload | null {
   try {
     const parsed = JSON.parse(decodeURIComponent(atob(value))) as ReviewPayload;
     if (!parsed.requestTitle || !Array.isArray(parsed.evidence)) return null;
+    if (typeof parsed.expiresAt === "number" && Date.now() > parsed.expiresAt) return null;
     return {
       requestTitle: parsed.requestTitle,
       reviewer: parsed.reviewer || "",
@@ -24,6 +26,7 @@ export function decodeReviewPayload(value: string): ReviewPayload | null {
       decision: ["Pending", "Approved", "Changes requested"].includes(parsed.decision)
         ? parsed.decision
         : "Pending",
+      expiresAt: typeof parsed.expiresAt === "number" ? parsed.expiresAt : undefined,
     };
   } catch {
     return null;
